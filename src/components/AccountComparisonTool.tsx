@@ -2,6 +2,8 @@
 import { CompositeDecorator, ContentBlock, Editor, EditorState } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import { ReactNode, useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 // Define types for store name entries
 interface StoreNameEntry {
@@ -39,7 +41,7 @@ const DraftEditor = ({
       onClick={() => {
         editorRef.current?.focus();
       }}
-      className="min-h-full"
+      className="min-h-full text-xs"
     >
       <Editor
         ref={editorRef}
@@ -71,6 +73,9 @@ function extractStoreName(line: string): string {
 }
 
 function AccountComparisonTool() {
+  // Add translation hook
+  const { t } = useTranslation();
+
   // Initialize editor states
   const [leftEditorState, setLeftEditorState] = useState(EditorState.createEmpty());
   const [rightEditorState, setRightEditorState] = useState(EditorState.createEmpty());
@@ -171,24 +176,6 @@ function AccountComparisonTool() {
       rightDuplicates,
     });
 
-    // Show message if duplicates are found
-    const leftDupeCount = Object.keys(leftDuplicates).length;
-    const rightDupeCount = Object.keys(rightDuplicates).length;
-
-    if (leftDupeCount > 0 || rightDupeCount > 0) {
-      let warningMsg = 'Duplicate store names found: ';
-      if (leftDupeCount > 0) {
-        warningMsg += `${leftDupeCount} in logged-in accounts`;
-      }
-      if (leftDupeCount > 0 && rightDupeCount > 0) {
-        warningMsg += ' and ';
-      }
-      if (rightDupeCount > 0) {
-        warningMsg += `${rightDupeCount} in wished login accounts`;
-      }
-      // Display the message
-    }
-
     // 3.4 Create a set of store names from the right editor for quick lookup
     const rightStoreNamesSet = new Set(rightValidNames);
 
@@ -274,15 +261,15 @@ function AccountComparisonTool() {
     }
 
     return (
-      <div className="mt-4 p-3  border border-yellow-200 rounded">
-        <h3 className="font-bold text-yellow-700">Duplicate Store Names:</h3>
+      <div className="mt-4 p-3 border border-yellow-200 rounded">
+        <h3 className="font-bold text-yellow-700">{t('duplicateStoreNames')}</h3>
         {leftDupes.length > 0 && (
           <div className="mt-2">
-            <p className="font-semibold">In Logged-in Accounts:</p>
+            <p className="font-semibold">{t('inLoggedAccounts')}</p>
             <ul className="list-disc pl-5">
               {leftDupes.map((name) => (
                 <li key={`left-${name}`}>
-                  "{name}" appears {duplicateInfo.leftDuplicates[name]} times
+                  "{name}" {t('appearsXTimes', { count: duplicateInfo.leftDuplicates[name] })}
                 </li>
               ))}
             </ul>
@@ -290,11 +277,11 @@ function AccountComparisonTool() {
         )}
         {rightDupes.length > 0 && (
           <div className="mt-2">
-            <p className="font-semibold">In Wished Login Accounts:</p>
+            <p className="font-semibold">{t('inWishedAccounts')}</p>
             <ul className="list-disc pl-5">
               {rightDupes.map((name) => (
                 <li key={`right-${name}`}>
-                  "{name}" appears {duplicateInfo.rightDuplicates[name]} times
+                  "{name}" {t('appearsXTimes', { count: duplicateInfo.rightDuplicates[name] })}
                 </li>
               ))}
             </ul>
@@ -311,18 +298,20 @@ function AccountComparisonTool() {
     return (
       <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded">
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-gray-700">Debug Information:</h3>
+          <h3 className="font-bold text-gray-700">{t('debugInformation')}</h3>
           <button
             className="text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded"
             onClick={() => setShowDebug(false)}
           >
-            Hide
+            {t('hide')}
           </button>
         </div>
 
         <div className="mt-2 grid grid-cols-3 gap-4">
           <div>
-            <p className="font-semibold">Left Names ({debugInfo.leftNames.length}):</p>
+            <p className="font-semibold">
+              {t('leftNames')} ({debugInfo.leftNames.length}):
+            </p>
             <ul className="text-xs list-disc pl-5 max-h-40 overflow-y-auto">
               {debugInfo.leftNames.map((name, index) => (
                 <li key={`left-debug-${index}`}>{name}</li>
@@ -331,7 +320,9 @@ function AccountComparisonTool() {
           </div>
 
           <div>
-            <p className="font-semibold">Right Names ({debugInfo.rightNames.length}):</p>
+            <p className="font-semibold">
+              {t('rightNames')} ({debugInfo.rightNames.length}):
+            </p>
             <ul className="text-xs list-disc pl-5 max-h-40 overflow-y-auto">
               {debugInfo.rightNames.map((name, index) => (
                 <li key={`right-debug-${index}`}>{name}</li>
@@ -340,7 +331,9 @@ function AccountComparisonTool() {
           </div>
 
           <div>
-            <p className="font-semibold">Matched Names ({debugInfo.matchedNames.length}):</p>
+            <p className="font-semibold">
+              {t('matchedNames')} ({debugInfo.matchedNames.length}):
+            </p>
             <ul className="text-xs list-disc pl-5 max-h-40 overflow-y-auto">
               {debugInfo.matchedNames.map((name, index) => (
                 <li key={`match-debug-${index}`}>{name}</li>
@@ -355,15 +348,25 @@ function AccountComparisonTool() {
   // Output/rendering of the component
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Account Comparison Tool</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold"></h2>
+        <LanguageSwitcher />
+      </div>
+
       <div className="flex flex-row gap-5 mb-5">
         <div className="flex-1">
-          <div className="font-bold mb-1">Currently Logged-in Accounts</div>
+          <div className="font-bold mb-1">{t('currentlyLoggedAccounts')}</div>
           <div className="border border-gray-300 rounded p-2.5 h-96 overflow-y-auto">
             <DraftEditor
               editorState={leftEditorState}
               onChange={setLeftEditorState}
-              placeholder="Paste logged-in accounts here..."
+              placeholder={
+                t('currentlyLoggedAccounts') +
+                `
+1 xxx店 xxxxxxx@qq.com 点击添加 111 在线,点击续期！ 2025-04-16 15:05:56 ---- 修改 删除 修正登陆
+2 xxx店 xxxxxxx@qq.com 点击添加 111 在线,点击续期！ 2025-04-16 15:05:56 ---- 修改 删除 修正登陆
+                `
+              }
             />
           </div>
         </div>
@@ -373,23 +376,32 @@ function AccountComparisonTool() {
             className="py-2 px-4 bg-green-600 text-white rounded cursor-pointer hover:bg-green-700"
             onClick={compareAccounts}
           >
-            Compare
+            {t('compare')}
           </button>
 
           {matchCount > 0 && (
             <div className="mt-4 text-sm">
-              <p>Matched: {matchCount}</p>
+              <p>
+                {t('matched')}: {matchCount}
+              </p>
             </div>
           )}
         </div>
 
         <div className="flex-1">
-          <div className="font-bold mb-1">Wished Login Accounts</div>
+          <div className="font-bold mb-1">{t('wishedLoginAccounts')}</div>
           <div className="border border-gray-300 rounded p-2.5 h-96 overflow-y-auto">
             <DraftEditor
               editorState={rightEditorState}
               onChange={setRightEditorState}
-              placeholder="Paste wished login accounts here..."
+              placeholder={
+                t('wishedLoginAccounts') +
+                `
+xxx店#xxxx@qq.com#password..
+xxx店#xxxx@qq.com#password..
+xxx店#xxxx@qq.com#password..
+                `
+              }
             />
           </div>
         </div>
@@ -399,29 +411,33 @@ function AccountComparisonTool() {
       {/* Debug information toggle button */}
       {!showDebug && (
         <button
-          className="mt-4 text-xs bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded"
+          className="mt-4 text-xs bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded text-white"
           onClick={() => setShowDebug(true)}
         >
-          Show Debug Info
+          {t('showDebug')}
         </button>
       )}
       {/* Debug information panel */}
       {renderDebugInfo()}
       <div className="mt-4">
-        <p className="font-bold">Instructions:</p>
+        <p className="font-bold">{t('instructions')}</p>
         <ul className="list-disc pl-5">
           <li>
-            Left Format:{' '}
-            <code className="bg-blue-500 px-1 rounded">[number] [store name] [email] ...</code>
+            {t('leftFormat')}{' '}
+            <code className="bg-blue-500 px-1 rounded text-white">
+              [number] [store name] [email] ...
+            </code>
           </li>
           <li>
-            Right Format:{' '}
-            <code className="bg-green-500 px-1 rounded">[store name]#[email]#[password]</code>
+            {t('rightFormat')}{' '}
+            <code className="bg-green-500 px-1 rounded text-white">
+              [store name]#[email]#[password]
+            </code>
           </li>
-          <li>Red highlights indicate matching accounts in both lists</li>
-          <li>Un-highlighted entries in either editor need attention</li>
-          <li>Duplicate store names will be shown in the warning section</li>
-          <li>Use the debug button to see detailed matching information</li>
+          <li>{t('redHighlightsIndicate')}</li>
+          <li>{t('unhighlightedEntries')}</li>
+          <li>{t('duplicateStoreNamesWill')}</li>
+          <li>{t('useDebugButton')}</li>
         </ul>
       </div>
     </div>

@@ -1,5 +1,7 @@
 // Import polyfills first
 import './polyfills';
+// Import i18n config
+import './i18n';
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
