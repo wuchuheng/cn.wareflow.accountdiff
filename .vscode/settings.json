@@ -9,7 +9,7 @@
     // Auto organize imports when save
     "source.organizeImports": "explicit",
     // Auto remove unused imports when save
-    "source.removeUnused": "explicit",
+    // "source.removeUnused": "explicit",
     // Auto fix all problems when save
     "source.fixAll": "explicit"
   },
