@@ -180,7 +180,10 @@ function AccountComparisonTool() {
     const rightStoreNamesSet = new Set(rightValidNames);
 
     // 3.5 Find matching names and count them
-    const matchingNames = leftValidNames.filter((name) => rightStoreNamesSet.has(name));
+    let matchingNames = leftValidNames.filter((name) => rightStoreNamesSet.has(name));
+    // remove duplicates
+    matchingNames = matchingNames.filter((name, index, self) => self.indexOf(name) === index);
+
     console.log('leftValidNames:', leftValidNames);
     console.log('rightStoreNamesSet:', rightStoreNamesSet);
     console.log('Matching names:', matchingNames);
@@ -355,7 +358,10 @@ function AccountComparisonTool() {
 
       <div className="flex flex-row gap-5 mb-5">
         <div className="flex-1">
-          <div className="font-bold mb-1">{t('currentlyLoggedAccounts')}</div>
+          <div className="font-bold mb-1">
+            {t('currentlyLoggedAccounts')}
+            {debugInfo.leftNames.length > 0 ? `(${debugInfo.leftNames.length}` : ''})
+          </div>
           <div className="border border-gray-300 rounded p-2.5 h-96 overflow-y-auto">
             <DraftEditor
               editorState={leftEditorState}
@@ -389,7 +395,10 @@ function AccountComparisonTool() {
         </div>
 
         <div className="flex-1">
-          <div className="font-bold mb-1">{t('wishedLoginAccounts')}</div>
+          <div className="font-bold mb-1">
+            {t('wishedLoginAccounts')}
+            {debugInfo.rightNames.length > 0 ? `(${debugInfo.rightNames.length})` : ''}
+          </div>
           <div className="border border-gray-300 rounded p-2.5 h-96 overflow-y-auto">
             <DraftEditor
               editorState={rightEditorState}
