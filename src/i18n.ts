@@ -70,6 +70,8 @@ const resources = {
       // 2.1.6 Comparison results
       compareResults: 'Comparison Results',
       noData: 'No data available for comparison.',
+      missedAccounts: 'Missed Accounts',
+      extraAccounts: 'Extra Accounts',
     },
   },
   zh: {
@@ -138,6 +140,8 @@ const resources = {
       // 2.1.6 Comparison results
       compareResults: '比较结果',
       noData: '没有可比较的数据。',
+      missedAccounts: '缺失的账户',
+      extraAccounts: '多余的账户',
     },
   },
 };
