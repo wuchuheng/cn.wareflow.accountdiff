@@ -142,6 +142,7 @@ const resources = {
       noData: '没有可比较的数据。',
       missedAccounts: '缺失的账户',
       extraAccounts: '多余的账户',
+      repeatedItems: '重复条目',
     },
   },
 };
