@@ -5,6 +5,7 @@ function AccountComparisonTool() {
   const { t } = useTranslation();
   const [currentAccounts, setCurrentAccounts] = useState<string>('');
   const [expectedAccounts, setExpectedAccounts] = useState<string>('');
+  const [expectedAccountsList, setExpectedAccountsList] = useState<string>('');
 
   // Helper: split by line, trim, remove empty
   const parseList = (str: string): string[] =>
@@ -14,7 +15,7 @@ function AccountComparisonTool() {
       .filter((s: string) => s.length > 0);
 
   const currentList = parseList(currentAccounts);
-  const expectedList = parseList(expectedAccounts);
+  const expectedList = parseList(expectedAccountsList);
 
   // Find missing and extra
   const missing = expectedList.filter((acc: string) => !currentList.includes(acc));
@@ -32,6 +33,7 @@ function AccountComparisonTool() {
             value={currentAccounts}
             onChange={(e) => setCurrentAccounts(e.target.value)}
           />
+          <div className="text-sm text-gray-500">共计:{currentList.length}条</div>
         </div>
         <div>
           <label className="block mb-1 font-medium">{t('wishedLoginAccounts')}</label>
@@ -39,8 +41,24 @@ function AccountComparisonTool() {
             className="border-2 border-gray-300 rounded-md p-2 w-full min-h-[120px]"
             placeholder={t('targetAccountPlaceholder')}
             value={expectedAccounts}
-            onChange={(e) => setExpectedAccounts(e.target.value)}
+            onChange={(e) => {
+              // If the format is like this:
+              // name#accountName#password
+              // then remove the `#accountName#password` part
+              const value = e.target.value;
+              const lines = value.split('\n');
+
+              const formattedLines = lines.map((line) => {
+                if (line.includes('#')) {
+                  return line.split('#')[0];
+                }
+                return line;
+              });
+              setExpectedAccounts(value);
+              setExpectedAccountsList(formattedLines.join('\n'));
+            }}
           />
+          <div className="text-sm text-gray-500">共计:{expectedList.length}条</div>
         </div>
       </div>
       <div className="bg-gray-50 rounded-md p-4 mt-4">

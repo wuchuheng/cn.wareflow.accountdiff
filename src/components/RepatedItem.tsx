@@ -48,6 +48,7 @@ function RepatedItem() {
           value={accounts}
           onChange={(e) => setAccounts(e.target.value)}
         />
+        <div className="text-sm text-gray-500">共计:{accountList.length}条</div>
       </div>
 
       <div className="bg-gray-50 rounded-md p-4 mt-4">
